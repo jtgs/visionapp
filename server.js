@@ -3,17 +3,20 @@ const multiparty = require('multiparty');
 const fs = require('fs');
 const bs = require('./blobstorage.js');
 const cv = require('./vision.js');
+const { CosmosClient } = require('@azure/cosmos');
+const { DBClient } = require('./cosmos.js');
 
 const app = express();
 
 // Serve static files from 'public' directory.
 app.use(express.static('public'));
+
+// /photo endpoint - take a picture and do CV analysis on it.
 app.post('/photo', function (req, res) {
     console.log('Got a request for /photo');
 
     // Handler for POST data
     var form = new multiparty.Form();
-    var blobURL = "";
     var answer = "";
     form.parse(req, function(err, fields, files) {
         console.log(files);
@@ -33,7 +36,35 @@ app.post('/photo', function (req, res) {
         });
     });
 
+});
+
+const cosmosClient = new CosmosClient({
+    endpoint: process.env.AZURE_COSMOS_HOST,
+    key: process.env.AZURE_COSMOS_KEY
+});
+const dbClient = new DBClient(cosmosClient, "testCollection");
+dbClient.init();
+
+// /additem endpoint
+app.post('/additem', function(req, res) {
+    var form = new multiparty.Form();
+    form.parse(req, async function(err, fields, files) {
+        console.log(fields);
+        await dbClient.addItem(fields);
+    });
+    res.send();
+});
+
+// /getitems endpoint
+app.get('/items', async function (req, res) {
+    const querySpec = {
+        query: "SELECT * FROM c"
+      };
+ 
+    const items = await dbClient.find(querySpec);
+    res.send(items.map(item => item['item'][0]));
 })
+
 
 function normalizePort(val) {
     var port = parseInt(val, 10);
