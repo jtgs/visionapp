@@ -1,6 +1,15 @@
 <html>
     <head>
         <style>
+            #vid-controls {
+                width: 50%;
+                float: left;
+            }
+            #item-list {
+                width: 40%;
+                float: left;
+                padding-left: 10%;
+            }
             #vid-show, #vid-take {
                 display: block;
                 margin-bottom: 20px;
@@ -15,14 +24,46 @@
         <div id="vid-controls">
             <video id="vid-show" autoplay></video>
             <input id="vid-take" type="button" value="Take Photo"/>
-            <div id="answer"></div>
+
+            <textarea id="answer"></textarea>
+            <button id="saveitem">Save to list</button>
         </div>
+        <div id="item-list">
+            <h3>Items</h3>
+            <ul id="items-list">
+
+            </ul>
+        </div>
+
+
+
         <script type="text/javascript">
+            const reloadItemList = function() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/items', true);
+                xhr.responseType = 'json';
+                xhr.onload = function () {
+                    console.log(this.response);
+                    const list = document.getElementById('items-list');
+                    list.innerHTML = "";
+                    this.response.forEach( function (item) {
+                        var entry = document.createElement('li');
+                        entry.innerHTML = item;
+                        list.appendChild(entry);
+                    });
+                }
+                xhr.send();
+            }
+
             window.addEventListener("load", function(){
+                reloadItemList();
+
                 // [1] GET ALL THE HTML ELEMENTS
                 var video = document.getElementById("vid-show"),
                     canvas = document.getElementById("vid-canvas"),
-                    take = document.getElementById("vid-take");
+                    take = document.getElementById("vid-take"),
+                    answer = document.getElementById("answer"),
+                    saveitem = document.getElementById("saveitem");
 
                 // [2] ASK FOR USER PERMISSION TO ACCESS CAMERA
                 // WILL FAIL IF NO CAMERA IS ATTACHED TO COMPUTER
@@ -48,10 +89,21 @@
                             xhr.open('POST', '/photo', true);
                             xhr.onload = function () {
                                 console.log(this.response);
-                                document.getElementById('answer').innerHTML = this.response;
+                                answer.innerHTML = this.response;
                             };
                             xhr.send(data);
                         });
+                    });
+
+                    saveitem.addEventListener("click", function(){                        
+                        var data = new FormData();
+                        data.append('item', answer.innerHTML);
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/additem', true);
+                        xhr.onload = function () {
+                            reloadItemList();
+                        }
+                        xhr.send(data);
                     });
                 })
                 .catch(function(err) {

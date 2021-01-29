@@ -29,7 +29,7 @@ async function computerVision(describeURL) {
     const caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
     var rsp = `This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`;
     console.log(rsp);
-    return rsp;
+    return caption.text;
 }
 
 // // Formats the bounding box
