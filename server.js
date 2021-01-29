@@ -18,16 +18,21 @@ app.post('/photo', function (req, res) {
     form.parse(req, function(err, fields, files) {
         console.log(files);
         fs.readFile(files['image'][0].path, async function (err, data) {
+            // Upload to Azure Blob Storage
             blobRsp = await bs.uploadBlob(data);
             blobURL = blobRsp.blockUrl;
+
             // Now we have the URL we can do the CV analysis on it
             answer = await cv.computerVision(blobURL);
-            //Clean up
 
+            //Clean up the storage
+            // TODO
+
+            // Return response to client
+            res.send(answer);
         });
     });
 
-    res.send('Thanks for the POST');
 })
 
 // Start the Express server
