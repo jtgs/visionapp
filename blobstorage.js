@@ -1,15 +1,16 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 const uuidv1 = require('uuidv1');
 
+// Retrieve the connection string for use with the application. The storage
+// connection string is stored in an environment variable on the machine
+// running the application called AZURE_STORAGE_CONNECTION_STRING. If the
+// environment variable is created after the application is launched in a
+// console or with Visual Studio, the shell or application needs to be closed
+// and reloaded to take the environment variable into account.
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
+
 async function uploadBlob(blob) {
     console.log('Azure Blob storage v12 - JavaScript quickstart sample');
-    // Retrieve the connection string for use with the application. The storage
-    // connection string is stored in an environment variable on the machine
-    // running the application called AZURE_STORAGE_CONNECTION_STRING. If the
-    // environment variable is created after the application is launched in a
-    // console or with Visual Studio, the shell or application needs to be closed
-    // and reloaded to take the environment variable into account.
-    const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 
     // Create the BlobServiceClient object which will be used to create a container client
     const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
@@ -46,11 +47,20 @@ async function uploadBlob(blob) {
     return { 'blockUrl': blockBlobClient.url, 'containerName': containerName };
 }
 
-function deleteContainer(containerName) {
-    console.log('todo');
+async function deleteContainer(containerName) {
+    // Create the BlobServiceClient object which will be used to create a container client
+    const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+
+    // Get a reference to a container
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+
+    // Delete the container, which will also delete its contents
+    await containerClient.delete();
+
+    console.log("Deleted container " + containerName);    
 }
 
 
-module.exports = { uploadBlob }
+module.exports = { uploadBlob, deleteContainer }
 
 // main().then(() => console.log('Done')).catch((ex) => console.log(ex.message));

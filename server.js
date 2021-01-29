@@ -19,14 +19,14 @@ app.post('/photo', function (req, res) {
         console.log(files);
         fs.readFile(files['image'][0].path, async function (err, data) {
             // Upload to Azure Blob Storage
-            blobRsp = await bs.uploadBlob(data);
-            blobURL = blobRsp.blockUrl;
+            var blobRsp = await bs.uploadBlob(data);
+            var blobURL = blobRsp.blockUrl;
 
             // Now we have the URL we can do the CV analysis on it
             answer = await cv.computerVision(blobURL);
 
             //Clean up the storage
-            // TODO
+            await bs.deleteContainer(blobRsp.containerName);
 
             // Return response to client
             res.send(answer);
