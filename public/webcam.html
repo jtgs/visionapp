@@ -34,15 +34,23 @@
 
                     // [4] WHEN WE CLICK ON "TAKE PHOTO" BUTTON
                     take.addEventListener("click", function(){
-                    // Create snapshot from video
-                    var draw = document.createElement("canvas");
-                    draw.width = video.videoWidth;
-                    draw.height = video.videoHeight;
-                    var context2D = draw.getContext("2d");
-                    context2D.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                    // Put into canvas container
-                    canvas.innerHTML = "";
-                    canvas.appendChild(draw);
+                        // Create snapshot from video
+                        var draw = document.createElement("canvas");
+                        draw.width = video.videoWidth;
+                        draw.height = video.videoHeight;
+                        var context2D = draw.getContext("2d");
+                        context2D.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                        //Upload to server
+                        draw.toBlob(function (blob) {
+                            var data = new FormData();
+                            data.append('image', blob);
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('POST', '/photo', true);
+                            xhr.onload = function () {
+                                console.log(this.response);
+                            };
+                            xhr.send(data);
+                        });
                     });
                 })
                 .catch(function(err) {
