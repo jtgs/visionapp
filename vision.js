@@ -27,9 +27,11 @@ async function computerVision(describeURL) {
     // Analyze URL image
     console.log('Analyzing URL image to describe...', describeURL.split('/').pop());
     const caption = (await computerVisionClient.describeImage(describeURL)).captions[0];
+    const brands = (await computerVisionClient.analyzeImage(describeURL, { visualFeatures: ['Brands'] })).brands;
     var rsp = `This may be ${caption.text} (${caption.confidence.toFixed(2)} confidence)`;
     console.log(rsp);
-    return caption.text;
+    console.log(brands);
+    return {'caption': caption.text, 'brands': brands};
 }
 
 // // Formats the bounding box
@@ -86,30 +88,30 @@ async function computerVision(describeURL) {
 // }
 
 
-// function brandVision(brandURLImage) {
-//     async.series([
-//         async function () {
-//             // Analyze URL image
-//             console.log('Analyzing brands in image...', brandURLImage.split('/').pop());
-//             const brands = (await computerVisionClient.analyzeImage(brandURLImage, { visualFeatures: ['Brands'] })).brands;
+function brandVision(brandURLImage) {
+    async.series([
+        async function () {
+            // Analyze URL image
+            console.log('Analyzing brands in image...', brandURLImage.split('/').pop());
+            const brands = (await computerVisionClient.analyzeImage(brandURLImage, { visualFeatures: ['Brands'] })).brands;
 
-//             // Print the brands found
-//             if (brands.length) {
-//             console.log(`${brands.length} brand${brands.length != 1 ? 's' : ''} found:`);
-//             for (const brand of brands) {
-//                 console.log(`    ${brand.name} (${brand.confidence.toFixed(2)} confidence)`);
-//             }
-//             } else { console.log(`No brands found.`); }
-//         },
-//         function () {
-//             return new Promise((resolve) => {
-//                 resolve();
-//             })
-//         }
-//     ], (err) => {
-//         throw (err);
-//     });
-// }
+            // Print the brands found
+            if (brands.length) {
+            console.log(`${brands.length} brand${brands.length != 1 ? 's' : ''} found:`);
+            for (const brand of brands) {
+                console.log(`    ${brand.name} (${brand.confidence.toFixed(2)} confidence)`);
+            }
+            } else { console.log(`No brands found.`); }
+        },
+        function () {
+            return new Promise((resolve) => {
+                resolve();
+            })
+        }
+    ], (err) => {
+        throw (err);
+    });
+}
 
 // // Status strings returned from Read API. NOTE: CASING IS SIGNIFICANT.
 // // Before Read 3.0, these are "Succeeded" and "Failed"

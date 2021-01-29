@@ -108,9 +108,10 @@
                             data.append('image', blob);
                             var xhr = new XMLHttpRequest();
                             xhr.open('POST', '/photo', true);
+                            xhr.responseType = 'json';
                             xhr.onload = function () {
                                 console.log(this.response);
-                                answer.innerHTML = this.response;
+                                answer.innerHTML = this.response['caption'] + " - " + this.response['brands'].map(b => b['name']);
                             };
                             xhr.send(data);
                         });
