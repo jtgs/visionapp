@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
         <style>
             #vid-controls {
                 width: 50%;
@@ -19,22 +20,36 @@
                 margin: 0;
             }
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
     </head>
     <body>
-        <div id="vid-controls">
-            <video id="vid-show" autoplay></video>
-            <input id="vid-take" type="button" value="Take Photo"/>
+        <nav class="navbar fixed-top navbar-dark bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Azure Computer Vision Shopping List</a>
+            </div>
+          </nav>
+        <div class="container-fluid" style="padding-top: 5rem;">
+          <div class="row">
+            <div id="vid-controls" class="col-sm">
+                <video id="vid-show" autoplay></video>
+                <button id="vid-take" class="btn btn-primary">Take Photo</button>
+                <div class="row">
+                    <div class="col">
+                        <textarea id="answer" class="form-control"></textarea>
+                    </div>
+                    <div class="col">
+                        <button id="saveitem" class="btn btn-primary">Save to list</button>                        
+                    </div>
+                </div>
+            </div>
+            <div id="item-list" class="col-sm">
+                <h3>Items</h3>
+                <ul id="items-list">
 
-            <textarea id="answer"></textarea>
-            <button id="saveitem">Save to list</button>
+                </ul>
+            </div>
         </div>
-        <div id="item-list">
-            <h3>Items</h3>
-            <ul id="items-list">
-
-            </ul>
         </div>
-
 
 
         <script type="text/javascript">
